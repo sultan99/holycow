@@ -1,0 +1,19 @@
+{
+  "version": "0.0.0",
+  "bootstrap": {
+    "npmClientArgs": [
+      "--no-package-lock"
+    ]
+  },
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "message": "release: publish"
+    }
+  },
+  "packages": [
+    "packages/*"
+  ],
+  "private": true,
+  "stream": true
+}
