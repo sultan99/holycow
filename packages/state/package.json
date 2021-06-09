@@ -1,0 +1,35 @@
+{
+  "name": "@holycow/state",
+  "version": "0.0.0",
+  "description": "0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sultan99/restate",
+    "directory": "packages/store"
+  },
+  "author": "sultan99",
+  "main": "dist/index",
+  "sideEffects": false,
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist",
+    "compile": "tsc -b",
+    "lint": "eslint . --ext .tsx,.ts --fix",
+    "prepublishOnly": "npm run build",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "tsc": "tsc -w"
+  },
+  "peerDependencies": {
+    "ramda": "^0.27.1",
+    "react": "^17.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
