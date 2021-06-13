@@ -18,7 +18,7 @@ export type Hook<T> = {
     U extends `@${infer K}` ? K extends keyof State<T> ? State<T>[K & keyof T] : never : never
 }
 
-export type Action<P, S> = (set: Set<S>) => (payload: P) => void
+export type Action<P, S> = (set: Set<S>) => (payload?: P) => ((s: S) => void) | void;
 export type Update<T> = (s: T) => T
 export type Updaters<T> = Record<keyof T, any>
 export type UseValue<T> = <K extends keyof T>(prop: K) => T[K]

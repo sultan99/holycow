@@ -1,15 +1,11 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "jsx": "react",
     "module": "ES6",
+    "moduleResolution": "Node",
     "noImplicitAny": false,
-    "noLib": false,
     "removeComments": true,
-    "skipLibCheck": true,
     "sourceMap": true,
     "target": "ES6",
     "lib": [

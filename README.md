@@ -29,7 +29,7 @@ const useAuth = createState({
       .then(res => res.json())
       .then(set(`token`)) // 👈 set is curried function
       .catch(set(`error`))
-      .then(() => set(`loading`, false))
+      .finally(() => set(`loading`, false))
   }
 })
 

@@ -38,13 +38,13 @@ export const createState: CreateState = <S>(initState: S): Hook<S> => {
   const useValue: UseValue<S> = name => {
     const [value, setValue] = useState(state[name])
     useEffect(() => {
-      const update = updaters[name]
-      update?.push(setValue) ?? (updaters[name] = [setValue])
+      const updater = updaters[name]
+      updater?.push(setValue) ?? (updaters[name] = [setValue])
 
       return () => {
-        const index = update?.findIndex(R.equals(setValue)) ?? -1
+        const index = updater?.findIndex(R.equals(setValue)) ?? -1
         const canRemove = index > -1
-        canRemove && update.splice(index, 1)
+        canRemove && updater.splice(index, 1)
       }
     }, [])
     return value
