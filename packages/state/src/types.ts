@@ -3,7 +3,7 @@ export type State<T> = Pick<T, SkipAction<T>>
 export type ProxyState<T> = Set<T> & {
   set: Set<T>
 } & {
-  [K in keyof T]: T[K] extends Action<any, T> ? ReturnType<T[K]> : T[K]
+  [K in keyof T]: T[K] extends (Action<any, T> | Computed<any, T>) ? ReturnType<T[K]> : T[K]
 }
 
 export type CreateState = <S extends Record<string, any>>(opts: S) => Hook<S>
@@ -19,6 +19,7 @@ export type Hook<T> = {
 }
 
 export type Action<P, S> = (set: Set<S>) => (payload?: P) => ((s: S) => void) | void;
+export type Computed<R, S> = (state: S) => R
 export type Update<T> = (s: T) => T
 export type Updaters<T> = Record<keyof T, any>
 export type UseValue<T> = <K extends keyof T>(prop: K) => T[K]
