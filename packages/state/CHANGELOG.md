@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.3](https://github.com/sultan99/restate/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2021-10-07)
+
+
+### Bug Fixes
+
+* **state:** set currying function & typings ([f97b566](https://github.com/sultan99/restate/commit/f97b566ac1af8f2f757edcc16a6ed21974c32b75))
+
+
+
+
+
 # [0.1.0-alpha.2](https://github.com/sultan99/restate/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2021-09-21)
 
 
