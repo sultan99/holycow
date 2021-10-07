@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.4](https://github.com/sultan99/restate/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2021-10-07)
+
+
+### Bug Fixes
+
+* **state:** remove setters on unmount ([e0b8f46](https://github.com/sultan99/restate/commit/e0b8f46eec36be51452c543cb3a17efb84c3f4e4))
+
+
+
+
+
 # [0.1.0-alpha.3](https://github.com/sultan99/restate/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2021-10-07)
 
 
