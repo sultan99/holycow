@@ -3,7 +3,11 @@ export type State<T> = Pick<T, SkipAction<T>>
 export type ProxyState<T> = Set<T> & {
   set: Set<T>
 } & {
-  [K in keyof T]: T[K] extends (Action<any, T> | Computed<any, T>) ? ReturnType<T[K]> : T[K]
+  [K in keyof T]: T[K] extends (
+    | Action<T>
+    | ActionPayload<T, any>
+    | Computed<T, any>
+  ) ? ReturnType<T[K]> : T[K]
 }
 
 export type CreateState = <S extends Record<string, any>>(opts: S) => Hook<S>
@@ -18,8 +22,9 @@ export type Hook<T> = {
     U extends `@${infer K}` ? K extends keyof State<T> ? State<T>[K & keyof T] : never : never
 }
 
-export type Action<P, S> = (set: Set<S>) => (payload?: P) => ((s: S) => void) | void;
-export type Computed<R, S> = (state: S) => R
+export type Action<S> = (set: ProxyState<S>) => () => ((s: S) => void) | void
+export type ActionPayload<S, P> = (set: ProxyState<S>) => (payload: P) => ((s: S) => void) | void
+export type Computed<S, R> = (state: S) => R
 export type Update<T> = (s: T) => T
 export type Updaters<T> = Record<keyof T, any>
 export type UseValue<T> = <K extends keyof T>(prop: K) => T[K]
@@ -34,5 +39,11 @@ export type Set<T> = {
 }
 
 export type SkipAction<T> = {
-  [K in keyof T]: T[K] extends Action<any, T> ? never : K
+  [K in keyof T]: T[K] extends (Action<T> | ActionPayload<T, any>) ? never : K
 }[keyof T]
+
+export type SetLike<T> = <K extends keyof T>(a: K | Update<T>, b?: any) => void
+
+export type CurredSetLike<T> = <K extends keyof T>(a: K | Update<T>, b?: any) =>
+  | ((c?: any) => void)
+  | void

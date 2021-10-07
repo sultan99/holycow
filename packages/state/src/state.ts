@@ -1,6 +1,7 @@
 import * as R from 'ramda'
 import {useEffect, useState} from 'react'
-import {CreateState, Hook, ProxyState, Set, Update, Updaters, UseValue} from './types'
+import {CreateState, CurredSetLike, Hook, ProxyState} from './types'
+import {Set, SetLike, Update, Updaters, UseValue} from './types'
 
 const isFunction = R.is(Function) as (x: unknown) => x is Function
 const isString = R.is(String) as (x: unknown) => x is String
@@ -10,18 +11,28 @@ const pickStateKeys = R.pipe(
   R.keys,
 )
 
+const curry = <T>(fn: SetLike<T>): CurredSetLike<T> => (a, b) => {
+  if (isFunction(a)) {
+    return fn(a)
+  }
+  if (b === undefined) {
+    return (c: any) => fn(a, c)
+  }
+  return fn(a, b)
+}
+
 export const createState: CreateState = <S>(initState: S): Hook<S> => {
   let state = {...initState}
   const stateKeys = pickStateKeys(initState) as (keyof S)[]
   const updaters: Updaters<S> = {} as S
 
-  const set: Set<S> = R.curry(<K extends keyof S>(a: K | Update<S>, b?: any): void => {
-    if (isString(a) && isFunction(initState[a as K])) {
+  const set: Set<S> = curry((a: keyof S | Update<S>, b) => {
+    if (isString(a) && isFunction(initState[a as keyof S])) {
       throw new Error(`Attempt to update computed value or action.`)
     }
     const updateState = (false
-      || isString(a) && isFunction(b) && R.over(R.lensProp(a as K), b)
-      || isString(a) && R.set(R.lensProp(a as K), b)
+      || isString(a) && isFunction(b) && R.over(R.lensProp(a as keyof S), b)
+      || isString(a) && R.set(R.lensProp(a as keyof S), b)
       || isFunction(a) && a
       || R.always(a)
     ) as Update<S>
@@ -33,7 +44,7 @@ export const createState: CreateState = <S>(initState: S): Hook<S> => {
       shouldUpdate && updater.map(R.applyTo(next[key]))
     })
     state = next
-  })
+  }) as Set<S>
 
   const useValue: UseValue<S> = name => {
     const [value, setValue] = useState(state[name])
