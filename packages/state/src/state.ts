@@ -53,9 +53,10 @@ export const createState: CreateState = <S>(initState: S): Hook<S> => {
       updater?.push(setValue) ?? (updaters[name] = [setValue])
 
       return () => {
-        const index = updater?.findIndex(R.equals(setValue)) ?? -1
+        const upd = updaters[name]
+        const index = upd?.findIndex(R.equals(setValue)) ?? -1
         const canRemove = index > -1
-        canRemove && updater.splice(index, 1)
+        canRemove && upd.splice(index, 1)
       }
     }, [])
     return value
