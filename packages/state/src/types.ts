@@ -22,9 +22,9 @@ export type Hook<T> = {
     U extends `@${infer K}` ? K extends keyof State<T> ? State<T>[K & keyof T] : never : never
 }
 
-export type Action<S> = (set: ProxyState<S>) => () => ((s: S) => void) | void
-export type ActionPayload<S, P> = (set: ProxyState<S>) => (payload: P) => ((s: S) => void) | void
-export type Computed<S, R> = (state: S) => R
+export type Action<S> = (set: ProxyState<S>) => () => ((s: ProxyState<S>) => void) | void
+export type ActionPayload<S, P> = (set: ProxyState<S>) => (payload: P) => ((s: ProxyState<S>) => void) | void // eslint-disable-line
+export type Computed<S, R> = (state: ProxyState<S>) => R
 export type Update<T> = (s: T) => T
 export type Updaters<T> = Record<keyof T, any>
 export type UseValue<T> = <K extends keyof T>(prop: K) => T[K]
