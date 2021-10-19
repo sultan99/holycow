@@ -22,7 +22,7 @@ const curry = <T>(fn: SetLike<T>): CurredSetLike<T> => (a, b) => {
 }
 
 export const createState: CreateState = <S>(initState: S): Hook<S> => {
-  let state = {...initState}
+  const state = {...initState}
   const stateKeys = pickStateKeys(initState) as (keyof S)[]
   const updaters: Updaters<S> = {} as S
 
@@ -31,10 +31,9 @@ export const createState: CreateState = <S>(initState: S): Hook<S> => {
       throw new Error(`Attempt to update computed value or action.`)
     }
     const updateState = (false
-      || isString(a) && isFunction(b) && R.over(R.lensProp(a as keyof S), b)
-      || isString(a) && R.set(R.lensProp(a as keyof S), b)
+      || isString(a) && isFunction(b) && R.over(R.lensPath(a.split(`.`)), b)
+      || isString(a) && R.set(R.lensPath(a.split(`.`)), b)
       || isFunction(a) && a
-      || R.always(a)
     ) as Update<S>
 
     const next = updateState(state)
@@ -42,8 +41,8 @@ export const createState: CreateState = <S>(initState: S): Hook<S> => {
       const updater = updaters[key]
       const shouldUpdate = updater && !R.equals(state[key], next[key])
       shouldUpdate && updater.map(R.applyTo(next[key]))
+      state[key] = next[key]
     })
-    state = next
   }) as Set<S>
 
   const useValue: UseValue<S> = name => {
