@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.6](https://github.com/sultan99/holycow/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2021-10-19)
+
+
+### Bug Fixes
+
+* **state:** late updates ([0250064](https://github.com/sultan99/holycow/commit/025006499c2c885c429c0142b6a2da0c2d9ca4fd))
+
+
+
+
+
 # [0.1.0-alpha.5](https://github.com/sultan99/holycow/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2021-10-14)
 
 
