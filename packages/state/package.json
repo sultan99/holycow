@@ -5,8 +5,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sultan99/restate",
-    "directory": "packages/store"
+    "url": "https://github.com/sultan99/holycow",
+    "directory": "packages/state"
   },
   "author": "sultan99",
   "main": "dist/index",
@@ -21,8 +21,8 @@
     "compile": "tsc -b",
     "lint": "eslint . --ext .tsx,.ts --fix",
     "prepublishOnly": "npm run build",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "jest --watch",
+    "test-coverage": "jest --coverage",
     "tsc": "tsc -w"
   },
   "peerDependencies": {
