@@ -1,11 +1,11 @@
 import * as R from 'ramda'
 import {act, renderHook} from '@testing-library/react-hooks'
-import {createState, computed, action} from '.'
+import {createState, createHook, computed, action} from '.'
 import {renderHookWithCount} from './utils'
 
 let userCallCount = 0
 
-const useUsers = createState({
+const usersState = createState({
   likedId: 1,
   selectedId: 2,
   users: [
@@ -20,6 +20,8 @@ const useUsers = createState({
   setSelectedId: action(set => set(`selectedId`)),
 })
 
+const useUsers = createHook(usersState)
+
 // avoid first creation time in tests reports
 test(`Heat up renderHook`, () => {
   renderHook(() => {
@@ -31,23 +33,23 @@ test(`Heat up renderHook`, () => {
 
 describe(`Action creator`, () => {
   test(`simple`, () => {
-    createState({
-      setId: action(set => set(`selectedId`)),
-    })
+    // createState({
+    //   setId: action(set => set(`selectedId`)),
+    // })
     expect(1).toBe(1) // TODO
   })
 
   test(`action creator`, () => {
-    createState({
-      setId: action(({set}, state) => set(`selectedId`)),
-    })
+    // createState({
+    //   setId: action(({set}, state) => set(`selectedId`)),
+    // })
     expect(1).toBe(1) // TODO
   })
 
   test(`action creator`, () => {
-    createState({
-      setId: action(({set}, state) => set(`selectedId`)),
-    })
+    // createState({
+    //   setId: action(({set}, state) => set(`selectedId`)),
+    // })
     expect(1).toBe(1) // TODO
   })
 })
@@ -164,5 +166,22 @@ describe(`State reset`, () => {
       {id: 1, name: `John`},
       {id: 2, name: `Jane`},
     ])
+  })
+})
+
+describe(`Custom setters`, () => {
+  test(`Action`, () => {
+    const {result} = renderHook(() => {
+      const {selectedId, setSelectedId, user} = useUsers()
+      return {selectedId, setSelectedId, user}
+    })
+
+    const {setSelectedId} = result.current
+    expect(setSelectedId).toEqual(expect.any(Function))
+
+    act(() => setSelectedId(1))
+
+    expect(result.current.selectedId).toBe(1)
+    expect(result.current.user).toEqual({id: 1, name: `John`},)
   })
 })

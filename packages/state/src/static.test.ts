@@ -3,7 +3,7 @@ import {createState, computed, action} from '.'
 
 let userCallCount = 0
 
-const useUsers = createState({
+const userState = createState({
   likedId: 1,
   selectedId: 2,
   users: [
@@ -20,7 +20,7 @@ const useUsers = createState({
 
 describe(`Static state`, () => {
   test(`spread select values`, () => {
-    const {likedId, selectedId, setSelectedId, user, users} = useUsers
+    const {likedId, selectedId, setSelectedId, user, users} = userState
     expect(1).toBe(userCallCount)
     expect(likedId).toBe(1)
     expect(selectedId).toBe(2)
@@ -35,7 +35,7 @@ describe(`Static state`, () => {
 
   test(`direct select`, () => {
     userCallCount = 0
-    const userId = useUsers.user.id
+    const userId = userState.user.id
     expect(userId).toBe(2)
     expect(0).toBe(userCallCount)
   })

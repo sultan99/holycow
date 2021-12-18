@@ -1,11 +1,11 @@
 import * as R from 'ramda'
 import {renderHook} from '@testing-library/react-hooks'
-import {createState, computed, action} from '.'
+import {createHook, createState, computed, action} from '.'
 import {renderHookWithCount} from './utils'
 
 let userCallCount = 0
 
-const useUsers = createState({
+const usersState = createState({
   likedId: 1,
   selectedId: 2,
   users: [
@@ -19,6 +19,8 @@ const useUsers = createState({
   }),
   setSelectedId: action(set => set(`selectedId`)),
 })
+
+const useUsers = createHook(usersState)
 
 // avoid first creation time in tests reports
 test(`Heat up renderHook`, () => {

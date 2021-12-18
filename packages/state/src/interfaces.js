@@ -28,6 +28,7 @@ export const userState = createState({
 })
 
 authState.on(`logout`, users.reset)
+authState.off(`logout`, users.reset)
 authState.subscribe(`user`, appState.set(`user`))
 
 const {set, login, logout} = useAuth()
