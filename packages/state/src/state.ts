@@ -52,8 +52,8 @@ export const createState = initState => {
   const deps = []
   const state = {}
   const stateKeys = []
-  const subscriberList = [] // one callback -> f(state), many keys: [[`key1`, `key2`], f]
   const subscribers = {} // one key, many callbacks -> fn(state[key]): {key: [f1, f1]}
+  const subscriberList = [] // one callback -> f(state), many keys: [[`key1`, `key2`], f]
 
   const set = curry((first, second?: any) => {
     const updateState = (
