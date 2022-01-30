@@ -49,44 +49,30 @@ const trackKeys = (state, keys) => () => new Proxy(state, {
 export const createState = initState => {
   const actions = {}
   const computes = {}
-  const deps = []
+  const deps = new Map()
   const state = {}
   const stateKeys = []
-  const subscribers = {} // one key, many callbacks -> fn(state[key]): {key: [f1, f1]}
-  const subscriberList = [] // one callback -> f(state), many keys: [[`key1`, `key2`], f]
+  const subscribers = new Map()
 
   const set = curry((first, second?: any) => {
     const updateState = (
-      isString(first) && isFunction(second) && R.over(R.lensPath(first.split(`.`)), second) ||
-      isString(first) && R.set(R.lensPath(first.split(`.`)), second) ||
+      isObject(first) && (prev => ({...prev, ...first})) ||
       isFunction(first) && first ||
-      isObject(first) && (prev => ({...prev, ...first}))
+      isString(first) && isFunction(second) && R.over(R.lensPath(first.split(`.`)), second) ||
+      isString(first) && R.set(R.lensPath(first.split(`.`)), second)
     )
     const nextState = proxify(updateState(state), computes)
-    const keysToUpdate = isString(first) ?
-      deps.reduce((acc, [key, list]) => {
-        list.includes(first) && acc.push(key)
-        return acc
-      }, []) :
-      stateKeys
+    const keysToUpdate = isString(first) ? deps.get(first) : stateKeys // TODO Support atomic update
 
-    const updatedKeys = []
+    const subs = []
     keysToUpdate.forEach(key => {
       const value = nextState[key]
       if (state[key] === value) return
       state[key] = value
-      updatedKeys.push(key)
+      subscribers.has(key) && subs.push(...subscribers.get(key))
     })
 
-    const updatedSubscribers = []
-    updatedKeys.forEach(key => {
-      subscribers[key]?.forEach(callback => callback(state[key]))
-      subscriberList.forEach(([keys, callback], index) => {
-        if (updatedSubscribers[index] || !keys.includes(key)) return
-        callback(state)
-        updatedSubscribers[index] = true
-      })
-    })
+    new Set(subs).forEach(setter => setter(state))
   })
 
   Object.keys(initState).forEach(key => {
@@ -105,7 +91,10 @@ export const createState = initState => {
     const proxyState = proxify({...initState, ...state}, computes, keys) // TODO
     state[key] = proxyState[key]
     stateKeys.push(key)
-    deps.push([key, keys])
+    keys.forEach(index =>
+      deps.get(index)?.add(key) ??
+      deps.set(index, new Set([key]))
+    )
   })
 
   const reset = (override = {}) => {
@@ -113,33 +102,23 @@ export const createState = initState => {
     set(() => next, null)
   }
 
-  const subscribe = (key, callback) => {
-    if (isArray(key)) {
-      subscriberList.push([key, callback])
-      return
+  const subscribe = (key, func) => {
+    const keys = isString(key) ? [key] : key
+    const callback = obj => func(
+      isString(key) ? obj[key] : obj
+    )
+    const append = index => {
+      subscribers.get(index)?.add(callback) ??
+      subscribers.set(index, new Set([callback]))
     }
-    if (!subscribers[key]) {
-      subscribers[key] = []
-    }
-    if (!subscribers[key].includes(callback)) {
-      subscribers[key].push(callback)
-    }
+    keys.forEach(append)
+
+    return () => keys.forEach(
+      key => subscribers.get(key)?.delete(callback)
+    )
   }
 
-  const unsubscribe = (key, callback) => {
-    if (isArray(key)) {
-      const index = subscriberList.findIndex(([, fn]) => fn === callback)
-      subscriberList.splice(index, 1)
-      return
-    }
-    const index = subscribers[key]?.findIndex(isEqual(callback))
-    index >= 0 && subscribers[key]?.splice(index, 1)
-  }
-
-  const reservedFunc = {
-    set, reset,
-    subscribe, unsubscribe,
-  }
+  const reservedFunc = {set, reset, subscribe}
 
   return new Proxy(state, {
     get: (target, key) =>
@@ -151,18 +130,11 @@ export const createState = initState => {
 
 export const createHook = holyState => (...selectors) => {
   const keys = selectors.concat()
-  const [value, setValue] = useState(selectors.length
-    ? holyState
-    : trackKeys(holyState, keys)
+  const [value, setValue] = useState(
+    selectors.length ? holyState : trackKeys(holyState, keys)
   )
 
-  useEffect(() => {
-    const {subscribe, unsubscribe} = holyState
-    subscribe(keys, setValue)
-    return () => {
-      unsubscribe(keys, setValue)
-    }
-  }, [])
+  useEffect(() => holyState.subscribe(keys, setValue), [])
 
   return (
     selectors.length === 0 && value ||
