@@ -6,11 +6,6 @@ import {Set, SetLike, Update, Updaters, UseValue} from './types'
 const isFunction = R.is(Function) as (x: unknown) => x is Function
 const isString = R.is(String) as (x: unknown) => x is String
 
-const pickStateKeys = R.pipe(
-  R.reject(isFunction),
-  R.keys,
-)
-
 const curry = <T>(fn: SetLike<T>): CurredSetLike<T> => (a, b) => {
   if (isFunction(a)) {
     return fn(a)
@@ -23,7 +18,7 @@ const curry = <T>(fn: SetLike<T>): CurredSetLike<T> => (a, b) => {
 
 export const createState: CreateState = <S>(initState: S): Hook<S> => {
   const state = {...initState}
-  const stateKeys = pickStateKeys(initState) as (keyof S)[]
+  const stateKeys = Object.keys(initState).filter(isFunction) as (keyof S)[]
   const updaters: Updaters<S> = {} as S
 
   const set: Set<S> = curry((a: keyof S | Update<S>, b) => {
