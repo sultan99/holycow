@@ -287,7 +287,7 @@ const name = useUser(`@name`)
 
 By adding `@`, we tell hook to export a static value, which means that if the value changes, we will not get the changed value later, but we will always get the most recent value at the time of the request.
 
-In the following snippet, we used the 'useUser' hook in a socket callback. Although the function is not a react component, we can access the state variables:, however we can get access to the state variables: 
+We used the `useUser` hook in a socket callback in the following snippet. Although the function is not a react component, we can access the state variables: 
 
 ```js
 socket.on(`message`, json => {
