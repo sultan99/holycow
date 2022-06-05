@@ -306,7 +306,7 @@ It is entirely up to you to go with a single store or multiple domain stores, wi
 
 Even so, by splitting store into small states, you may get some benefits. For example, you can reduce the size of the main bundle. Let's consider case when our app has two different states for authorized users and guests. We could load the user profile state in lazy mode when the user gets logged in. But before that, we fetch only the required hooks to handle the guest state.
 
-On the other hand, splitting store helps better organize and understand the application state. The following hooks, are more implicit and meaningful:
+On the other hand, splitting store helps better organize and understand the application state. The following hooks, are more explicit and meaningful:
 
 ```js
 useModal()
