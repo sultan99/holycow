@@ -1,11 +1,11 @@
 {
   "name": "@holycow/state",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sultan99/restate",
-    "directory": "packages/store"
+    "url": "https://github.com/sultan99/holycow",
+    "directory": "packages/state"
   },
   "author": "sultan99",
   "main": "dist/index",
@@ -25,10 +25,6 @@
     "tsc": "tsc -w"
   },
   "peerDependencies": {
-    "ramda": "^0.27.1",
     "react": "^18.2.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

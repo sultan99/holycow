@@ -1,6 +1,6 @@
 {
   "name": "holycow",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "private": true,
   "keywords": [
     "state management",
@@ -9,13 +9,16 @@
   "license": "MIT",
   "author": "sultan99",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sultan99/holycow"
+  },
   "devDependencies": {
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.3",
     "@babel/preset-typescript": "^7.18.6",
     "@types/jest": "^29.1.1",
     "@types/node": "^18.8.0",
-    "@types/ramda": "^0.28.15",
     "@types/react": "^18.0.21",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
