@@ -1,7 +1,7 @@
 import type {Action} from '../action/types'
+import type {Any, State} from '../core/types'
 import type {Computed} from '../computed/types'
 import type {GetTrackedProps, ProxyOptions, ProxyState, TrackProperty} from './types'
-import type {Any, State} from '../core/types'
 
 import {isAction} from '../action'
 import {isComputed} from '../computed'

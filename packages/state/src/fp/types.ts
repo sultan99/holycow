@@ -1,6 +1,10 @@
 import type {ComputedValue} from '../computed/types'
 import type {State} from '../core/types'
 
+type KeyOrPath<T, P> = P extends `${string}.${string}`
+  ? TypeFromPath<T, P, undefined>
+  : P extends keyof T ? T[P] : undefined
+
 export type Func = (...args: any[]) => any
 
 export type TypeFromPath<T, P, R = never> = (
@@ -14,10 +18,6 @@ export type TypeFromPath<T, P, R = never> = (
       }[P]
     : T
 )
-
-type KeyOrPath<T, P> = P extends `${infer F}.${infer S}`
-  ? TypeFromPath<T, P, undefined>
-  : P extends keyof T ? T[P] : undefined
 
 export interface Pick {
   <P extends string, T>(value: P, obj: T): KeyOrPath<T, P>

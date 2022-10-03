@@ -1,5 +1,6 @@
-import type {Cache, Computed} from './types'
 import type {Any} from '../core/types'
+import type {Cache, Computed} from './types'
+
 import {createProxy, getTrackedProps} from '../proxy'
 import {pick} from '../fp'
 

@@ -1,14 +1,14 @@
 import type {Append, Func, Pick, Update} from './types'
 
-export const isFunction = (value: unknown): value is Function => (
+export const isFunction = (value: any): value is Function => (
   typeof value === `function`
 )
 
-export const isObject = (value: unknown): value is Object => (
+export const isObject = (value: any): value is Object => (
   typeof value === `object`
 )
 
-export const isString = (value: unknown): value is string => (
+export const isString = (value: any): value is string => (
   typeof value === `string`
 )
 
@@ -19,7 +19,7 @@ export const curry = (fn: Func) => (...args: any[]) => (
 )
 
 export const compose = <T extends Func>(...fns: T[]) => <A>(...args: A[]) => (
-  fns.flat().reduceRight(
+  fns.reduceRight(
     (x, fn, index) => index === fns.length - 1 ? fn(...x) : fn(x),
     args
   )
