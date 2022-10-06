@@ -4,7 +4,10 @@ import type {TypeFromPath, ValOrFunc} from '../fp/types'
 
 type Update<I, P> = (value: TypeFromPath<StaticProps<I>, P>) => void
 
-type Subscribe<T> = <P extends string>(path: P, update: Update<T, P>) => void
+interface Subscribe<T> {
+  (fn: (state: T) => void): () => void
+  <P extends string>(path: P, update: Update<T, P>): () => void
+}
 
 export type Any = Record<string | symbol, any>
 
@@ -13,7 +16,7 @@ export type InitState = Record<string | symbol, any>
 export type State<I> = I & {
   set: Setter<StaticProps<I>>
   reset: (override?: Partial<StaticProps<I>>) => void
-  subscribe: Subscribe<I>
+  subscribe: Subscribe<StaticProps<I>>
 }
 
 export type StaticProps<T> = {
@@ -22,8 +25,13 @@ export type StaticProps<T> = {
 
 export type UpdateState<S> = (state: S) => S
 
+type AtomUpd<T> = {
+  [K in keyof T]: ((payload?: T[K]) => T[K]) | T[K]
+}
+
 export interface Setter<I> {
-  (fn: () => void): void
+  (fn: (state: I) => I): void
+  (value: Partial<AtomUpd<I>>): void
   <P extends string>(path: P, payload: ValOrFunc<I, P, never>): void
   <P extends string>(path: P): (payload: ValOrFunc<I, P, never>) => void
 }

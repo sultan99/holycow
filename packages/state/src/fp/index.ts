@@ -40,7 +40,9 @@ const deepUpdate = (keys: string[], fn: any, obj: any | any[]): any => {
       : ({...obj, [key]: fn(obj[key])})
   }
 
-  return {...obj, [key]: deepUpdate(rest, fn, obj[key])}
+  return Array.isArray(obj)
+    ? obj.map((v, i) => i.toString() === key ? deepUpdate(rest, fn, v) : v)
+    : {...obj, [key]: deepUpdate(rest, fn, obj[key])}
 }
 
 export const update: Update = curry(

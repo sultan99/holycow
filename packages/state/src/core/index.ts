@@ -45,7 +45,7 @@ export const createState = <I extends InitState>(initState: I) => {
     state.set(() => next)
   }
 
-  state.subscribe = (prop, fn) => {
+  state.subscribe = (prop: string | Func, fn: Func = () => null) => {
     const props = isString(prop) ? [prop] : staticProps
     const callback = isFunction(prop) ? prop : compose(fn, pick(prop))
     return addSubscriber(props, callback)

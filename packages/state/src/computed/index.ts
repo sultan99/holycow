@@ -36,6 +36,7 @@ export const computed = <T extends Any, R>(fn: (state: T) => R) => {
       cache.length > 2 && cache.shift() // keep previous & current state in the cache
       return computedValue
     }
+
     return cache[index][1]
   }
 
