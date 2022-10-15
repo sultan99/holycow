@@ -1,6 +1,5 @@
 import type {Action} from '../action/types'
 import type {Any, State} from '../core/types'
-import type {Computed} from '../computed/types'
 import type {GetTrackedProps, ProxyOptions, ProxyState, TrackProperty} from './types'
 
 import {isAction} from '../action'
@@ -33,11 +32,11 @@ export const createProxy = <T extends Any>(
 
         if (isAction(value)) {
           const action: Action<T, any[]> = value
-          const proxyState = createProxy(state)
+          const proxyState = createProxy(target)
           return <P>(...args: P[]) => action(proxyState)(...args)
         }
 
-        const {trackProps, parentProxy, parentProp} = opts
+        const {trackProps, parentProxy, parentProp, isHook} = opts
         const proxyState = parentProxy || receiver
         const propPath = parentProp ? `${parentProp}.${key}` : key
 
@@ -45,22 +44,19 @@ export const createProxy = <T extends Any>(
           trackProperty(proxyState, propPath)
         }
 
-        if (!isComputed(value)) {
-          return value
-        }
+        const nextValue = isComputed(value) ? value(target, isHook) : value
+        const keepTracking = trackProps && !Array.isArray(nextValue) && isObject(nextValue)
 
-        const compute: Computed<T, any> = value
-        const computedValue = compute(target)
-        if (trackProps && isObject(computedValue)) {
+        if (keepTracking) {
           trackedProps.get(proxyState).delete(propPath) // child will include parent property name
-          return createProxy(computedValue, {
+          return createProxy(nextValue, {
             parentProp: key,
             parentProxy: proxyState,
             trackProps
           })
         }
 
-        return computedValue
+        return nextValue
       },
     })
   )

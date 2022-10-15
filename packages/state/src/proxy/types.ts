@@ -12,6 +12,7 @@ export type ProxyOptions<T> = {
   parentProp?: string
   parentProxy?: ProxyState<T>
   trackProps?: boolean
+  isHook?: boolean
 }
 
 export type TrackProperty = <T>(proxy: ProxyState<T>, path: string) => void
