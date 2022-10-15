@@ -11,10 +11,12 @@ export type TypeFromPath<T, P, R = never> = (
   P extends string
     ? {
       [K in P]: K extends keyof T
-        ? K extends keyof State<never> ? T[K] : ComputedValue<T[K]>
+        ? K extends keyof State<never>
+          ? T[K]
+          : ComputedValue<T[K]>
         : K extends `${infer F}.${infer S}`
           ? TypeFromPath<ComputedValue<T[F & keyof T]>, S, R>
-          : R
+          : T extends any[] ? T[K & keyof T] : R
       }[P]
     : T
 )
@@ -34,8 +36,8 @@ export type ValOrFunc<T, P, R = undefined> =
   | ((p: TypeFromPath<T, P, R>) => TypeFromPath<T, P, R>)
 
 export interface Update {
+  <P extends string>(path: P): <T>(value: ValOrFunc<T, P>, obj: T) => T
   <P extends string, T>(path: P, value: ValOrFunc<T, P>, obj: T): T
   <P extends string, T>(path: P, value: ValOrFunc<T, P>): (obj: T) => T
   <P extends string, T>(path: P): (value: ValOrFunc<T, P>) => (obj: T) => T
-  <P extends string>(path: P): <T>(value: ValOrFunc<T, P>, obj: T) => T
 }
