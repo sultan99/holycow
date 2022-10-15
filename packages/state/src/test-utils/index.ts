@@ -20,11 +20,11 @@ afterEach(() => {
   document.body.removeChild(container)
 })
 
-export const delay = (ms: number) => new Promise(
-  resolve => setTimeout(resolve, ms)
-)
+type HookLike<S> =
+  | (UseHook<S> & ProxyState<S>)
+  | (() => ProxyState<S>)
 
-export const renderHook = <S>(hook: UseHook<S> & ProxyState<S>, ...props: string[]) => {
+export const renderHook = <S>(hook: HookLike<S>) => {
   let count = 0
   const result = {} as ProxyState<S>
   const renderCount = () => count
@@ -32,8 +32,9 @@ export const renderHook = <S>(hook: UseHook<S> & ProxyState<S>, ...props: string
   const TestComponent = () => {
     count ++
     const hookResult = hook()
-    const keys = props.length ? props : Object.keys(hookResult)
-    keys.forEach(key => result[key] = hookResult[key])
+    Object.keys(hookResult).forEach(
+      key => result[key] = hookResult[key]
+    )
 
     return createElement(`div`)
   }

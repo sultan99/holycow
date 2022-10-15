@@ -2,7 +2,7 @@ import type {Computed} from '../computed/types'
 import type {ProxyState} from '../proxy/types'
 import type {TypeFromPath, ValOrFunc} from '../fp/types'
 
-type Update<I, P> = (value: TypeFromPath<StaticProps<I>, P>) => void
+type Update<I, P> = (value: TypeFromPath<ProxyState<I>, P>) => void
 
 interface Subscribe<T> {
   (fn: (state: T) => void): () => void
@@ -16,7 +16,7 @@ export type InitState = Record<string | symbol, any>
 export type State<I> = I & {
   set: Setter<StaticProps<I>>
   reset: (override?: Partial<StaticProps<I>>) => void
-  subscribe: Subscribe<StaticProps<I>>
+  subscribe: Subscribe<I>
 }
 
 export type StaticProps<T> = {
@@ -39,7 +39,7 @@ export interface Setter<I> {
 export type UseHook<S> = <P extends string[]>(...sel: P) => (
   P extends []
     ? ProxyState<S>
-    : P extends [infer F, ...infer R]
+    : P extends [infer F, ...infer R] // eslint-disable-line @typescript-eslint/no-unused-vars
       ? R extends []
         ? TypeFromPath<ProxyState<S>, P[0]>
         : {[Index in keyof P]: TypeFromPath<ProxyState<S>, P[Index], never>}

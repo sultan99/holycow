@@ -45,14 +45,14 @@ export const createState = <I extends InitState>(initState: I) => {
     state.set(() => next)
   }
 
-  state.subscribe = (prop: string | Func, fn: Func = () => null) => {
+  state.subscribe = (prop: string | Func, fn?: Func) => {
     const props = isString(prop) ? [prop] : staticProps
-    const callback = isFunction(prop) ? prop : compose(fn, pick(prop))
+    const callback = isFunction(prop) ? prop : compose(fn!, pick(prop))
     return addSubscriber(props, callback)
   }
 
   const useHook = (...selectors: string[]) => {
-    const [value, setValue] = useState(createProxy(state, {trackProps: true}))
+    const [value, setValue] = useState(createProxy(state, {trackProps: true, isHook: true}))
 
     useEffect(() => {
       const props = getTrackedProps(value)
