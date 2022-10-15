@@ -4,9 +4,11 @@ import type {ValOrFunc} from '../fp/types'
 
 export type SetPayload<P> = P extends string ? P : never
 
-export type Action<I, A = any> = (state: ProxyState<State<I>>) =>
+export type Action<I, A = undefined> = (state: ProxyState<State<I>>) =>
   A extends any[]
     ? (...args: A) => void
     : A extends SetPayload<A>
       ? (payload: ValOrFunc<I, A>) => void
-      : A
+      : A extends undefined
+        ? () => void
+        : A
