@@ -3,12 +3,17 @@ import {createState, computed, Computed} from '..'
 import {renderHook} from '../test-utils'
 import {useUser} from '../test-utils/users'
 
-let execCount = 0
-
 type CircleState = {
   radius: number
   area: Computed<CircleState, number>
 }
+
+type ConeState = {
+  height: number
+  volume: Computed<ConeState, number>
+}
+
+let execCount = 0
 
 const useCircle = createState<CircleState>({
   radius: 3,
@@ -34,8 +39,8 @@ describe(`🧮 Computed value`, () => {
 
     expect(execCount).toBe(0) // computing function is not called until it is used
     expect(useCircle.area).toBe(79) // function is called, because the input is changed
-    expect(useCircle.area).toBe(79) // no call, the value is retrieved from the cache
-    expect(execCount).toBe(1)
+    expect(useCircle.area).toBe(79)
+    expect(execCount).toBe(1) // computing function called once the other time used cache
   })
 })
 
@@ -61,24 +66,24 @@ describe(`🧮 Computed value using hook`, () => {
   })
 
   it(`should call side effects only if computing function called as a hook`, () => {
-    const useCrazy = createState<CircleState>({
-      radius: 2,
-      area: computed(({radius}, sideEffect) => {
+    const useCone = createState<ConeState>({
+      height: 2,
+      volume: computed(({height}, sideEffect) => {
         execCount ++
-        const x = sideEffect(() => useCircle(`area`)) || 0
-        const y = sideEffect(() => 10) || 0
-        return x + y + radius
+        const whiteNoise = sideEffect(() => 1.5) || 0
+        const area = sideEffect(() => useCircle(`area`)) || 0
+        return Math.round(1 / 3 * area * height + whiteNoise)
       }),
     })
 
-    expect(useCrazy.area).toBe(2)
+    expect(useCone.volume).toBe(0)
 
-    const {result} = renderHook(useCrazy)
-    expect(result.area).toBe(40)
-    expect(useCircle.area).toBe(28)
+    const {result} = renderHook(useCone)
+    expect(result.volume).toBe(20)
 
     act(() => useCircle.set(`radius`, 5))
-    expect(result.area).toBe(91)
-    expect(useCrazy.area).toBe(91)
+    expect(result.volume).toBe(54)
+    expect(useCone.volume).toBe(54)
+    expect(execCount).toBe(4) // side effects prevent caching
   })
 })

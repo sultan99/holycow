@@ -1,7 +1,7 @@
 import type {AddSubscribe, CreateSubscription, IsNotEqual, Subscribe} from './types'
 import {pick} from '../fp'
 
-const isNotEqual: IsNotEqual = (a, b) => prop => pick(prop, a) !== pick(prop, b)
+export const isNotEqual: IsNotEqual = (a, b) => prop => pick(prop, a) !== pick(prop, b)
 
 export const createSubscription: CreateSubscription = () => {
   const subscribers = new Set<Subscribe>()
