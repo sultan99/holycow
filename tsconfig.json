@@ -2,13 +2,16 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "module": "ES6",
     "moduleResolution": "Node",
     "noImplicitAny": false,
     "removeComments": true,
     "sourceMap": true,
+    "strict": true,
     "target": "ES6",
     "lib": [
+      "DOM",
       "ES6"
     ]
   },

@@ -4,7 +4,7 @@
 <br/>
 <br/>
 <div align="center">
-  <img src="./holy-cow.png" width="20%"/>
+  <img src="./holy-cow.png" width="160px">
 </div>
 <br/>
 <br/>
@@ -13,380 +13,408 @@
 ## Quick intro
 Holy moly, you are here! You're more than welcome!
 
-It's all about state management with react hooks and immutable state. Think of it as a utility for creating hooks that can store a state. It's similar to react 'useState' hook, except that it stays outside of components and shares a global state across the entire application. The coolest part is that you are not required to use any context providers, observables, subscribers, or connectors: no boilerplate code but hooks.
+So, it is all about state management handled by hooks. Think of it as a utility for creating hooks that can store a global state across the entire application. The coolest part is that it works without context providers, observables, selectors, or HOC connectors. No boilerplate code but hooks.
 
-```js
+### 🦄 Main features
+- The library is tree-shakeable with no external dependency. Gzip size: ~1.2kb. 
+- The state hooks can be used outside of the React tree.
+- Greedy rendering. Only updated values trigger component rendering.
+- Computed values with caching and hook nesting.
+- Actions, setter, and selectors.
+- Subscription to the state changes.
+- Friendly with functional programming.
+- Strongly typed with TypeScript.
+
+<br/>
+<div align="center">
+  <img src="./wrong-marketing.png">
+</div>
+<br/>
+
+### 🚀 Getting started
+- 📖 [Online documentation](https://holy-cow.gitbook.io/holy-state/)
+- 🍿 [Online demo](https://codesandbox.io/s/github/sultan99/cards/tree/main)
+- 🐙 [Demo code source](https://github.com/sultan99/cards)
+
+```sh
+npm install @holycow/state
+```
+
+```jsx
 import {createState} from '@holycow/state'
 
-
-const useAuth = createState({
-  token: ``,
-  error: ``,
-  loading: false,
-  isTokenValid: state => isValid(state.token), // 👈 computed value
-  login: set => formData => { // 👈 action
-    set(`error`, ``)
-    set(`loading`, true)
-    fetch(`/api/login`, {method: `POST`, body: formData})
-      .then(res => res.json())
-      .then(set(`token`)) // 👈 set is curried function
-      .catch(set(`error`))
-      .finally(() => set(`loading`, false))
-  }
+// 👇 your store is a hook!
+const useUser = createState({
+  id: 1,
+  name: 'Homer Simpson',
+  address: {
+    house: 742,
+    street: 'Evergreen Terrace',
+  },
 })
 
-// 👇 hooks can be used out of components
-const onSubmit = event => {
-  const {login} = useAuth()
-  login(new FormData(event.target))
+const UserName = () => {
+  const {name} = useUser() // 👈 value from the state
+  return <div>{name}</div>
+}
+
+const {id, name, address} = useUser 
+// any values 👆 from the hook can be used outside of components
+```
+
+### 🍃 State update
+It is quite simple to modify state values with the built-in `set` function.
+
+```js
+const {set} = useUser()
+
+set('name', 'Ovuvuevuevue') // key & value
+set('id',  prevId => prevId + 1) // key & function
+set('address.street', 'rue de Beggen') // path & value, no spreading objects
+
+// atomic updates: multiple values at the same time
+set(state => ({
+  ...state,
+  id: state.id + 1,
+  name: 'Ovuvuevuevue',
+}))
+// or object as updating input
+set({
+  id: prevId => prevId + 1,
+  name: 'Ovuvuevuevue',
+})
+```
+
+The `set` function is not only overloaded but curried as well. We can apply parameters to it partially one by one:
+
+```js
+const setId = set('id') // returns function which will update 'id'
+setId(2) // actual updates with a value
+setId(prevId => prevId + 1) // or using function
+
+fetch('/api/users/1/address')
+  .then(res => res.json())
+  .then(set('address')) // equals 👉 .then(data => set('address', data))
+```
+
+### 🎬 Actions
+An action is any piece of code that modifies the state and targets some specific task, unlike the `set` function, which is more generic and used for a simple value update. It is a good place to move business logic like validation or network operations. 
+
+Action expects a curried function as a parameter. The first function provides the state — the second one handles the action payload.
+
+```js
+import {createState, action} from '@holycow/state'
+
+const useAuth = createState({
+  token: '',
+  error: '',
+  loading: false, // 👇 state         👇 payload
+  login: action(({set, loading}) => formData => {
+    if (loading) return
+    set('error', '') // 👈 the state can be updated directly from the action
+    set('loading', true})
+    fetch('/api/login', {method: 'POST', body: formData})
+      .then(res => res.json())
+      .then(set('token'))
+      .catch(set('error'))
+      .finally(() => set('loading', false))
+  }),
+})
+
+// ⚡ handler is created outside of the component, +1 performance
+const handleSubmit = event => {
   event.preventDefault()
+  useAuth.login(new FormData(event.target))
 }
 
 const Login = () => {
-  const {loading, error} = useAuth() // 👈 get any state value
-  const text = loading ? `Submitting` : `Login`
-
+  const {loading, error} = useAuth()
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit}>
       <input name='email' type='text'/>
       <input name='password' type='password'/>
       <p>{error}</p>
 
       <button type='submit' disabled={loading}>
-        {text}
+        {loading ? 'Submitting' : 'Login'}
       </button>
     </form>
   )
 }
 ```
 
-### 🍿 Demo
-Here you can find a demo project:
- - 📺 [Online demo](https://codesandbox.io/s/github/sultan99/cards/tree/main)
- - 🐙 [Github repo](https://github.com/sultan99/cards)
-
-### 📦 Installation
-```sh
-npm install @holycow/state
-```
-### 🪝 Your store is a hook
-The holy hook returns the state object and builtin `set` function.
-
-```js
-const initState = {
-  id: 1,
-  name: `Peter`,
-  address: {
-    house: 31,
-    street: `Spooner`,
-  },
-}
-
-const useUser = createState(initState)
-
-// usage
-// 👇 holy-state hook returns object
-const {id, name, address, set} = useUser() 
-const [{id, name, address}, set] = useState(initState)
-// 👆 react useState hook returns array 
-```
-
-You can modify the state values with the `set` function in different ways:
-```js
-const {set} = useUser()
-
-set(state => ({...state, name: `Boogle`})) // a whole state
-set(`name`, `Ovuvuevuevue`) // key & value
-set(`id`,  prevId => prevId + 1) // key & function
-set(`address.street`, `rue de Beggen`) // path & value, no spreading objects
-```
-
-The `set` is a function that has been curried. You can apply parameters to it partially one by one:
-
-```js
-const setId = set(`id`) // returns function which will update `id`
-setId(2) // actual updates
-setId(prevId => prevId + 1) // all above mentioned update ways are valid
-
-fetch(`/api/users/${312}/address`)
-  .then(res => res.json())
-  .then(set(`address`)) // equals .then(data => set(`address`, data))
-```
-
-### ⚡ Boost performance
-A state hook can be used anywhere, even outside a react component. As you may be aware, declaring a function inside a component slows performance because the code is rebuilt on each render. If you want to avoid this issue, you should either use the 'useCallback' hook or create the handler external to the component:
+### 🧠 Smart rendering
+Unlike other state management, the holy state library does not require memoized selectors or further optimization to avoid unnecessary rerenders. Instead, it comes with a state tracking feature out of the box. Only components with altered values get rerendered.
 
 ```jsx
-/**
- * The combo feature 🍔 + 🌶️ = ⚡
- * 1) curried function,
- * 2) hook used outside component
- */ 
-const {set} = useUser()
-const setName = set(`name`)
-// 👆 these two lines 
-// can be replaced by one 👇
-const setName = useUser().set(`name`)
-
-// the handler is outside component and created once
-const handleChange = event => {
-  setName(event.currentTarget.value)
+const Street = () => {
+  const {address} = useUser() 
+  return <div>{address.street}</div> // Evergreen Terrace
 }
 
-const Input = () => {
-  const {name} = useUser()
-  return (
-    <input value={name} onChange={handleChange}/>
-  )
-}
+// 💤 no render even the address object was updated, +1 performance
+useUser.set('address.house', 10)
+// 💤 no render, equal value applied, +1 performance
+useUser.set('address.street', `Evergreen Terrace`)
+// 🏃‍♂️ now it will be rendered
+useUser.set('address.street', `Spooner`)
 ```
-
-If you are familiar with [ramda](https://ramdajs.com/docs/#compose) like libraries, you can compose the functions:
-
-```js
-const handleChange = R.compose(
-  useUser().set(`name`), 
-  R.props([`currentTarget`, `value`]),
-)
-```
-
-### 🎬 Actions
-An action is any piece of code that modifies the state and targets some specific task, unlike the `set` function, which is more generic and used for a simple value update.
-
-When we declare an action we pass curried function with two or three parameters:
- - `set` — state setter
- - `payload` — payload of the action
- - `state` — the current state of the hook, an optional parameter can be omitted
-
-```js
-const useTodos = createState({
-  todos: [
-    {id: 1, checked: true, description: `Buy milk`},
-    {id: 2, checked: false, description: `Clean room`},
-  ],
- /**
-  * Action creates a new todo
-  * @param {string} description - Payload of the action
-  */ 
-  addTodo: set => description => state => {
-    const {todos} = state
-    const id = todos.reduce((acc, {id}) => Math.max(id + 1, acc), 0)
-    const newTodo = {id, description, checked: false}
-
-    set(`todos`, [...todos, newTodo])
-  },
- /**
-  * Action clear todos
-  * the third parameter is skipped
-  */ 
-  clearTodos: set => () => {
-    set(`todos`, [])
-  },
-})
-```
-
-When the action is called only payload should be passed:
-```js
-const {addTodo, clearTodos} = useTodos()
-addTodo(`Find a job`)
-clearTodos()
-```
-
 
 ### 🧮 Computed values
-A computed value is a value returned by a function, where its input can be the state or any other hook. The value gets recomputed if one of the inputs has changed. Therefore to modify the computed value, we should modify inputs. Conceptually, they are very similar to formulas in spreadsheets.
+A computed value is a value returned by a specified function. The function's input can be a state value or any other hook. To avoid unnecessary computations, the computed value is cached and recomputed only when the current dependency has changed. Conceptually, computed values are similar to spreadsheets' formulas or Redux memoized selectors.
 
 ```js
-const useFilter = createState({
-  filter: `all`, // all | completed | uncompleted
-})
+import {createState, computed} from '@holycow/state'
 
-const useTodos = createState({
-  todos: [
-    {id: 1, checked: true, description: `Buy milk`},
-    {id: 2, checked: false, description: `Clean room`},
-  ],
-  /**
-   * Computed value
-   * if `filter` or `todos` get changed
-   * the function will be recomputed
-   * @returns {Todo[]}
-   */ 
-  filteredTodos: state => {
-    const {todos} = state 
-    const {filter} = useFilter()
-    const isAll = filter === `all`
-    const isCompleted = filter === `completed`
-  
-    return isAll ? todos : todos.filter(
-      ({checked}) => checked === isCompleted
-    )
-  }
+const useUser = createState({
+  name: 'Peter',
+  birthDate: {
+    day: 8,
+    month: 12,
+    year: 1979,
+  },
+  // 🦥 lazy evaluation, function will be called when the value is used
+  age: computed(state =>
+    new Date().getFullYear() - state.birthDate.year
+  ), 
 })
 
 // usage
-const TodoList = () => {
-  const {filteredTodos} = useTodos()
-
-  return (
-    <ul>
-      {filteredTodos.map(todo => 
-        <li key={todo.id}>
-          {todo.description}
-        </li>
-      )}
-    </ul>
-  )
+const UserAge = () => {
+  const {name, age} = useUser()
+  // here 'age' 👆 value is calculated and cached
+  return <div>{name} is {age} years old guy.</div>
 }
 
+const homerAge = userUser.age // 👈 value from the cache, +1 performance
 ```
 
-### 🤹 Selectors
-Selectors are similar to CSS selectors. Instead of the DOM we select a value from the state.
-So it retrieves the value at a given path:
+In the example above, the computed value age will be recalculated if the year of birthDate is modified. Otherwise, it will use the cached value.
+
+What if we want to keep our `age` value updated when the year is changed? Let's assume our hard-working QA engineer opens our app on 31 December at 11:58! 
+
+We could use the  [useCurrentYear](https://gist.github.com/sultan99/8ad653259263e052951f9d961d5d982e) hook to keep the value updated, respectively. Then we should wrap the hook with the side effect function.
 
 ```js
+const useUser = createState({
+  name: 'Peter',
+  birthDate: {
+    day: 8,
+    month: 12,
+    year: 1979,
+  }, // side effect function 👇
+  age: computed((state, sideEffect) =>
+    sideEffect(useCurrentYear) - state.birthDate.year
+    // when it's required to pass a parameter 👇
+    // sideEffect(() => useCurrentYear('some-params'))
+  ),
+})
+```
+
+We should remember by using side effects, we lose the benefit of caching.
+
+### 🤹 Selectors
+Selectors are designed for convenient state access. The selector retrieves a value from the state at a given path. If we query more than one value, the selector will return an array with the requested values.
+
+```jsx
 const useMessages = createState({
   author: {
-    id: 100,
-    name: `Peter`,
+    id: 1,
+    name: 'Peter',
   },
   messages: [
-    {id: 1, text: `Hello`},
-    {id: 2, text: `World!`},
+    {id: 10, text: 'Hello'},
+    {id: 20, text: 'World!'},
   ]
 })
 
+// single value
+const authorName = useMessages('author.name')
+// 👆 equivalent 👇
 const {author} = useMessages()
 const authorName = author.name
-// 👆 these two lines are equivalent 👇
-const authorName = useMessages(`author.name`)
 
-
-const {messages} = useMessages()
+// multiple values
+const [authorName, firstMessage] = useMessages('author.name', 'messages.0.text')
+// 👆 equivalent 👇
+const {author, messages} = useMessages()
+const authorName = author.name
 const firstMessage = messages[0].text
-// 👆 these two lines are equivalent 👇
-const firstMessage = useMessages(`messages.0.text`)
+
+// one line component with a selector 👇
+const UserName = () => <div>useUser('name')</div>
 ```
 
-The same trick you can do with actions or `set` function:
+The same trick we can do with actions or `set` functions:
 ```js
-const setUser = useUser(`set`)
-const setMessage = useMessages(`set`)
+const setUser = useUser('set')
+const setMessage = useMessages('set')
 // 👆 equivalent 👇
 const {set: setUser} = useUser()
 const {set: setMessage} = useMessages()
 ```
 
-### 🗿 Static variables
-We showed some snippets above on how to use hook outside of react components, but this is only true for set and actions. To get variables from the state outside of a component, use a selector with the prefix `@`:
+### 📬 State subscriptions
+We can subscribe to the state changes and get notified when the state is updated. The `subscribe` function accepts a callback function as a parameter and returns another function for unsubscription.
 
 ```js
-const name = useUser(`@name`)
-```
+// subscription to the whole state     👇
+const unsubscribe = useUser.subscribe(state => {
+  localStorage.setItem('user', JSON.stringify(state))
+})
 
-By adding `@`, we tell hook to export a static value, which means that if the value changes, we will not get the changed value later, but we will always get the most recent value at the time of the request.
+unsubscribe() // canceling subscription 👆
 
-We used the `useUser` hook in a socket callback in the following snippet. Although the function is not a react component, we can access the state variables: 
-
-```js
-socket.on(`message`, json => {
-  const userId = useUser(`@id`)
-  const {set} = useMessages()
-  const data = JSON.parse(json);
-
-  if (data.receiverId === userId) {
-    set(`messages`, R.append(data.message))
-  }  
+// subscription to specific 👇 value
+useUser.subscribe('address.street' => {
+  console.log('User street was changed!')
 })
 ```
 
-### 🎏 Store: Single vs Multiple
-It is entirely up to you to go with a single store or multiple domain stores, with no restrictions. 
+### 🧩 Utility functions
+All functions are curried and pure by default.
 
-Even so, by splitting store into small states, you may get some benefits. For example, you can reduce the size of the main bundle. Let's consider case when our app has two different states for authorized users and guests. We could load the user profile state in lazy mode when the user gets logged in. But before that, we fetch only the required hooks to handle the guest state.
-
-On the other hand, splitting store helps better organize and understand the application state. The following hooks, are more explicit and meaningful:
-
+#### Compose & curry
 ```js
-useModal()
-useSearch()
-usePosts()
-useTodos()
+import {compose, curry} from '@holycow/state'
+
+// 🧂 functions can be curried for a next function composition
+const add = curry((a, b) => a + b)
+const divide = curry((a, b) => a / b)
+const multiply = curry((a, b) => a * b)
+
+multiply(1, 5)
+// 👆 equivalent 👇
+multiply(1)(5)
+
+// order of execution starts from bottom to top (from right to left)
+const compute = compose(
+  divide(4),
+  multiply(2),
+  add(5)
+)
+// 👆 equivalent 👇
+const compute = x => divide(4, multiply(2 * add(5, x))))
+
+const result = compute(3) // 👉 (3 + 5) * 2 / 4 = 4
 ```
 
-comparing to:
-
+#### Compose & pick
 ```js
-useStore()
+import {compose, pick} from '@holycow/state'
+
+const handleChange = compose(
+  useUser.set('name'), // 👈 2. sets the value to user name
+  pick('target.value'), // 👈 1. picks the value
+)
+// 👆 equivalent 👇
+const handleChange = event => {
+  const {value} = event.target
+  useUser.set('name', value)
+}
+```
+
+#### Append
+```js
+import {append} from '@holycow/state'
+
+const setMessage = useMessages.set('messages')
+
+setMessage(append({id: 30, text: 'Hello World!'}))
+// 👆 equivalent 👇
+setMessage(messages => [...messages, id: 30, text: 'Hello World!'}])
+```
+
+#### Update
+```js
+import {update} from '@holycow/state'
+
+const user = {
+  name: 'Peter',
+  address: {
+    house: 31,
+    street: 'Evergreen Terrace',
+  }
+}
+
+const newUser = update('address.street', 'Spooner', user)
+// 👆 equivalent 👇
+const newUser = {
+  ...user,
+  address: {
+    ...user.address,
+    street: 'Spooner',
+  }
+}
 ```
 
 ### 📎 TypeScript
-Important: Typescript ^4.3 above is the recommended version to work with holy state hooks.
-
-<img src="./ts-typing.gif" width="85%"/>
+The state typing is designed to be seamless. Once it is typed, it should provide the correct types everywhere.
 
 ```tsx
-import type {Action, ActionPayload, Computed, ComputedPayload} from '@holycow/state'
+import type {Action, Computed, Computed} from '@holycow/state'
 import {createState} from '@holycow/state'
-
-/**
- * Computed<StateType, ReturnType>
- * ComputedPayload<StateType, PayloadType, ReturnType>
- * Action<StateType>
- * ActionPayload<StateType, PayloadType>
- */
 
 type Todo = {
   id: number
   checked: boolean
   description: string
 }
-
-type UseTodos = {
+/**
+ * Computed<StateType, ReturnType>
+ * Action<StateType> action with no payload
+ * Action<StateType, [PayloadType1, PayloadType2 ...PayloadTypeN]>
+ */
+type TodosState = {
   filter: 'all' | 'completed' | 'uncompleted'
   todos: Todo[]
-  filteredTodos: Computed<UseTodos, Todo[]>
-  findTodo: ComputedPayload<UseTodos, number, Todo | undefined>
-  addTodo: ActionPayload<UseTodos, string>
-  clearTodos: Action<UseTodos>
+  filteredTodos: Computed<TodosState, Todo[]> // 👈 computing function returns Todo[]
+  addTodo: ActionPayload<TodosState, [string, boolean | undefined]> // 👈 action with payloads
+  clearTodos: Action<TodosState> // 👈 action without payload
 }
-
-const useTodos = createState<UseTodos>({
+// 👆 TypeScript zone, it can even be in a separate file.
+const useTodos = createState<TodosState>({
+// 👇 below like a normal JS code
   filter: 'all',
   todos: [
-    {id: 1, checked: true, description: `Buy milk`},
-    {id: 2, checked: false, description: `Clean room`},
+    {id: 1, checked: true, description: 'Buy milk'},
+    {id: 2, checked: false, description: 'Clean room'},
   ],
-  // Computed value
-  filteredTodos: state => {
+  filteredTodos: computed(state => {
     const {filter, todos} = state 
-    const isAll = filter === `all`
-    const isCompleted = filter === `completed`
+    const isAll = filter === 'all'
+    const isCompleted = filter === 'completed'
   
     return isAll ? todos : todos.filter(
       ({checked}) => checked === isCompleted
     )
-  },
-  // Computed value with payload
-  findTodo: state => id => {
-    const {todos} = state
-    return todos.find(todo => todo.id === id)
-  },
-  // Action using state
-  addTodo: set => description => state => {
-    const {todos} = state
+  }),
+  addTodo: action(state => (description, checked = false) => {
+    const {set, todos} = state
     const id = todos.reduce((acc, {id}) => Math.max(id + 1, acc), 0)
-    const newTodo = {id, description, checked: false}
+    const newTodo = {id, description, checked}
 
-    set(`todos`, [...todos, newTodo])
-  },
-  // Action
-  clearTodos: set => () => {
-    set(`todos`, [])
-  }
+    set('todos', [...todos, newTodo])
+  }),
+  clearTodos: action(({set}) => () => {
+    set('todos', [])
+  })
 })
-```
 
-## 🏃‍♂️ To be continued
-Don't miss out on all the new and improved features in the upcoming version!
+const [addTodo, set, todo] = useTodos(`addTodo`, `set`, `todos.0`)  // ✅ all good
+const [addTodo, set, todo] = useTodos(`addtodo`, `set`, `todos.0`)  // ❌ type error
+                                      // 👆 typos
+
+todo?.description // ✅ all good
+todo.description  // ❌ type error, it might be undefined
+
+addTodo('Buy milk') // ✅ all good
+addTodo(123) // ❌ type error
+
+set(`filter`, 'completed') // ✅ all good
+set(`filter`, 'new') // ❌ type error
+
+const setFilter = set(`filter`) // curried function
+setFilter('completed') // ✅ all good
+setFilter('new') // ❌ type error
+```
