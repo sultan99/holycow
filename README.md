@@ -20,8 +20,9 @@ So, it is all about state management handled by hooks. Think of it as a utility 
 - The state hooks can be used outside of the React tree.
 - Greedy rendering. Only updated values trigger component rendering.
 - Computed values with caching and hook nesting.
-- Actions, setter, and selectors.
+- Asynchronous actions.
 - Subscription to the state changes.
+- Event-driven architecture support.
 - Friendly with functional programming.
 - Strongly typed with TypeScript.
 
@@ -112,7 +113,7 @@ const useAuth = createState({
   login: action(({set, loading}) => formData => {
     if (loading) return
     set('error', '') // 👈 the state can be updated directly from the action
-    set('loading', true})
+    set('loading', true)
     fetch('/api/login', {method: 'POST', body: formData})
       .then(res => res.json())
       .then(set('token'))
@@ -271,81 +272,61 @@ useUser.subscribe('address.street' => {
 })
 ```
 
-### 🧩 Utility functions
-All functions are curried and pure by default.
+### 📢 Signal Events
+Signals provide a simple way to communicate between decoupled hooks that don't know each other directly, but some of them wait for the other to occur to do something. So, for example, we could import a user profile state in lazy mode when the user gets logged in. But before that, we fetch only the required hooks to handle the guest state. On the other hand, it avoids tight coupling of hooks and can resolve circle dependencies issues. Shortly, the signals are the implementation of event-driven architecture.
 
-#### Compose & curry
+> It is optional to use the signals. Subscriptions and nesting hooks can provide the same functionality.
+
+There are three steps to use the signals:
+ - Creation of the emitter function: `const ringDoorbell = createSignal()`.
+ - Creation of the signal listener: `on(ringDoorbell, useDoor.open)`.
+ - Call `ringDoorbell()` function to trigger the action.
+
 ```js
-import {compose, curry} from '@holycow/state'
+import {createSignal, on} from '@holycow/state'
 
-// 🧂 functions can be curried for a next function composition
-const add = curry((a, b) => a + b)
-const divide = curry((a, b) => a / b)
-const multiply = curry((a, b) => a * b)
+const logout = createSignal() // 👈 creates logout signal function
 
-multiply(1, 5)
-// 👆 equivalent 👇
-multiply(1)(5)
+// auth.js
+on(logout, () => { // 👈 listens to the logout signal
+  useAuth.logout()
+  console.log(`Bye bye!`)
+})
 
-// order of execution starts from bottom to top (from right to left)
-const compute = compose(
-  divide(4),
-  multiply(2),
-  add(5)
-)
-// 👆 equivalent 👇
-const compute = x => divide(4, multiply(2 * add(5, x))))
+// user.js
+on(logout, () => {
+  useUser.reset() // built-in function that restore initial state of the hook
+  localStorage.removeItem('user')
+})
 
-const result = compute(3) // 👉 (3 + 5) * 2 / 4 = 4
+// 👇 emits the logout signal
+logout()
 ```
 
-#### Compose & pick
-```js
-import {compose, pick} from '@holycow/state'
+To disable the listener, we should call the function returned by the `on` function.
 
-const handleChange = compose(
-  useUser.set('name'), // 👈 2. sets the value to user name
-  pick('target.value'), // 👈 1. picks the value
-)
-// 👆 equivalent 👇
-const handleChange = event => {
-  const {value} = event.target
-  useUser.set('name', value)
-}
+```js
+const off = on(login, useAuth.login)
+
+login('homer@simpson.com', 'pa$$word')
+
+off() // 👈 stops to react on the login signal
 ```
 
-#### Append
+Signals can be executed once and then removed from the listeners.
+
 ```js
-import {append} from '@holycow/state'
+import {createSignal, once} from '@holycow/state'
 
-const setMessage = useMessages.set('messages')
+const init = createSignal()
 
-setMessage(append({id: 30, text: 'Hello World!'}))
-// 👆 equivalent 👇
-setMessage(messages => [...messages, id: 30, text: 'Hello World!'}])
-```
+// 👇 instead of 'on' we use 'once'
+once(init, () => {
+  usePosts.loadPosts()
+})
 
-#### Update
-```js
-import {update} from '@holycow/state'
-
-const user = {
-  name: 'Peter',
-  address: {
-    house: 31,
-    street: 'Evergreen Terrace',
-  }
-}
-
-const newUser = update('address.street', 'Spooner', user)
-// 👆 equivalent 👇
-const newUser = {
-  ...user,
-  address: {
-    ...user.address,
-    street: 'Spooner',
-  }
-}
+init() // 👈 will trigger the callback function
+init() // no effects
 ```
 
 ### 📎 TypeScript

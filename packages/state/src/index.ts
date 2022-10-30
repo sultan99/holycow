@@ -3,6 +3,7 @@ export * from './computed'
 export * from './core'
 export * from './fp'
 export * from './proxy'
+export * from './signal'
 export * from './subscription'
 
 export * from './action/types'
