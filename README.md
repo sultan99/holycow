@@ -4,7 +4,7 @@
 <br/>
 <br/>
 <div align="center">
-  <img src="./holy-cow.png" width="160px">
+  <img src="./holy-cow.gif" width="160px">
 </div>
 <br/>
 <br/>
@@ -16,7 +16,7 @@ Holy moly, you are here! You're more than welcome!
 So, it is all about state management handled by hooks. Think of it as a utility for creating hooks that can store a global state across the entire application. The coolest part is that it works without context providers, observables, selectors, or HOC connectors. No boilerplate code but hooks.
 
 ### 🦄 Main features
-- The library is tree-shakeable with no external dependency. Gzip size: ~1.2kb. 
+- The library is tree-shakeable with no external dependency. [Gzip size: ~1.6kb](https://bundlephobia.com/package/@holycow/state@1.1.0). 
 - The state hooks can be used outside of the React tree.
 - Greedy rendering. Only updated values trigger component rendering.
 - Computed values with caching and hook nesting.
@@ -28,7 +28,7 @@ So, it is all about state management handled by hooks. Think of it as a utility 
 
 <br/>
 <div align="center">
-  <img src="./wrong-marketing.png">
+  <img src="./wrong-marketing.gif">
 </div>
 <br/>
 
@@ -156,9 +156,9 @@ const Street = () => {
 // 💤 no render even the address object was updated, +1 performance
 useUser.set('address.house', 10)
 // 💤 no render, equal value applied, +1 performance
-useUser.set('address.street', `Evergreen Terrace`)
+useUser.set('address.street', 'Evergreen Terrace')
 // 🏃‍♂️ now it will be rendered
-useUser.set('address.street', `Spooner`)
+useUser.set('address.street', 'Spooner')
 ```
 
 ### 🧮 Computed values
@@ -243,7 +243,7 @@ const authorName = author.name
 const firstMessage = messages[0].text
 
 // one line component with a selector 👇
-const UserName = () => <div>useUser('name')</div>
+const AuthorName = () => <div>{useMessages('author.name')}</div>
 ```
 
 The same trick we can do with actions or `set` functions:
@@ -290,7 +290,7 @@ const logout = createSignal() // 👈 creates logout signal function
 // auth.js
 on(logout, () => { // 👈 listens to the logout signal
   useAuth.logout()
-  console.log(`Bye bye!`)
+  console.log('Bye bye!')
 })
 
 // user.js
@@ -350,7 +350,7 @@ type TodosState = {
   filter: 'all' | 'completed' | 'uncompleted'
   todos: Todo[]
   filteredTodos: Computed<TodosState, Todo[]> // 👈 computing function returns Todo[]
-  addTodo: ActionPayload<TodosState, [string, boolean | undefined]> // 👈 action with payloads
+  addTodo: Action<TodosState, [string, boolean | undefined]> // 👈 action with payloads
   clearTodos: Action<TodosState> // 👈 action without payload
 }
 // 👆 TypeScript zone, it can even be in a separate file.
@@ -382,8 +382,8 @@ const useTodos = createState<TodosState>({
   })
 })
 
-const [addTodo, set, todo] = useTodos(`addTodo`, `set`, `todos.0`)  // ✅ all good
-const [addTodo, set, todo] = useTodos(`addtodo`, `set`, `todos.0`)  // ❌ type error
+const [addTodo, set, todo] = useTodos('addTodo', 'set', 'todos.0')  // ✅ all good
+const [addTodo, set, todo] = useTodos('addtodo', 'set', 'todos.0')  // ❌ type error
                                       // 👆 typos
 
 todo?.description // ✅ all good
@@ -392,10 +392,10 @@ todo.description  // ❌ type error, it might be undefined
 addTodo('Buy milk') // ✅ all good
 addTodo(123) // ❌ type error
 
-set(`filter`, 'completed') // ✅ all good
-set(`filter`, 'new') // ❌ type error
+set('filter', 'completed') // ✅ all good
+set('filter', 'new') // ❌ type error
 
-const setFilter = set(`filter`) // curried function
+const setFilter = set('filter') // curried function
 setFilter('completed') // ✅ all good
 setFilter('new') // ❌ type error
 ```
