@@ -33,7 +33,7 @@ export const createProxy = <T extends Any>(
         if (isAction(value)) {
           const action: Action<T, any[]> = value
           const proxyState = createProxy(target)
-          return action(proxyState)
+          return <P>(...args: P[]) => action(proxyState)(...args)
         }
 
         const {trackProps, parentProxy, parentProp, isHook} = opts
