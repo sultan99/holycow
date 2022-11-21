@@ -53,6 +53,19 @@ describe(`🐣 Reset state using hook`, () => {
     expect(result.currentPostId).toBe(2)
     expect(result.posts).toEqual(postState.posts)
   })
+
+  // Bug fix issue: #3
+  it(`should not remove reset function after resetting `, () => {
+    const {result} = renderHook(() => {
+      const {posts, reset, set} = usePosts()
+      return {posts, reset, set}
+    })
+
+    act(() => result.reset())
+    act(() => result.reset()) // should not delete itself
+    expect(result.posts).toBe(usePosts.posts)
+    expect(result.posts).toEqual(postState.posts)
+  })
 })
 
 describe(`🍟 State setter`, () => {

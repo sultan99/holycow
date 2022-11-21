@@ -41,7 +41,7 @@ export const createState = <I extends InitState>(initState: I) => {
   })
 
   state.reset = (override = {}) => {
-    const next = {...initState, ...override}
+    const next = {...state, ...initState, ...override}
     state.set(() => next)
   }
 
