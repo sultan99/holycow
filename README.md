@@ -267,7 +267,7 @@ const unsubscribe = useUser.subscribe(state => {
 unsubscribe() // canceling subscription 👆
 
 // subscription to specific 👇 value
-useUser.subscribe('address.street' => {
+useUser.subscribe('address.street', () => {
   console.log('User street was changed!')
 })
 ```
