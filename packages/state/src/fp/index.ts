@@ -5,7 +5,7 @@ export const isFunction = (value: any): value is Function => (
 )
 
 export const isObject = (value: any): value is Object => (
-  typeof value === `object`
+  typeof value === `object` && value !== null
 )
 
 export const isString = (value: any): value is string => (
