@@ -4,8 +4,6 @@ import {act} from 'react-dom/test-utils'
 import {createElement} from 'react'
 import {createRoot, Root} from 'react-dom/client'
 
-global.IS_REACT_ACT_ENVIRONMENT = true
-
 let root: Root
 let container: HTMLDivElement
 

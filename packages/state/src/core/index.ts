@@ -67,6 +67,7 @@ export const createState = <I extends InitState>(initState: I) => {
   }
 
   return new Proxy(useHook, {
-    get: (_target, prop) => proxyState[prop]
+    apply: (target, __, args) => target(...args),
+    get: (_target, prop) => prop === `apply` ? useHook : proxyState[prop]
   }) as UseHook<S> & ProxyState<S>
 }
