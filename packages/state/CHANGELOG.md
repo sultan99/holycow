@@ -1,85 +1,58 @@
-# Change Log
+## v1.2.0
+**Features**
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+🗃️ Context state
 
-# [0.1.0](https://github.com/sultan99/restate/compare/v0.1.0-alpha.6...v0.1.0) (2022-04-15)
+## v1.1.2
 
-**Note:** Version bump only for package @holycow/state
+**Bug fix**
 
+🐞 [Cannot create proxy with a non-object as target or handler](https://github.com/sultan99/holycow/issues/5).
 
+## v1.1.1
+**Bug fix**
 
+🐞 [Reset removes built-in functions](https://github.com/sultan99/holycow/issues/4)
 
+## v1.1.0
+**Feature**
 
-# [0.1.0-alpha.6](https://github.com/sultan99/restate/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2021-10-19)
+📢 Signal Events
 
+## v1.0.0
+**Features**
 
-### Bug Fixes
+- 🍃 Atomic state updates
+- 🧮 Computed values come with caching and lazy evaluation
+- 📬 Subscription to state changes
+- 🧩 Utility functions (compose, curry, pick, append, update)
+- 🎣 No external dependency, [Ramda](https://github.com/ramda/ramda) library is removed
 
-* **state:** late updates ([0250064](https://github.com/sultan99/restate/commit/025006499c2c885c429c0142b6a2da0c2d9ca4fd))
+**Breaking changes**
 
+🎬 Actions
 
+- Actions must now be wrapped with the `action` function
+- New declaration interface: `action(state => payload => { ... })`
 
+🧮 Computed values
 
+- Computed values must now be wrapped with the `computed` function
+- Payload from computed functions has been removed
+- New declaration interface: `computed(state => ...)`
 
-# [0.1.0-alpha.5](https://github.com/sultan99/restate/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2021-10-14)
+## v0.1.1
+**Chore**
 
+- Update packages
+- Remove Lerna
 
-### Bug Fixes
+## v0.1.0
+**Features**
 
-* **state:** typings ([022d4d8](https://github.com/sultan99/restate/commit/022d4d813ab4c6676500872ac250f6eb3b97ebdf))
-
-
-
-
-
-# [0.1.0-alpha.4](https://github.com/sultan99/restate/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2021-10-07)
-
-
-### Bug Fixes
-
-* **state:** remove setters on unmount ([e0b8f46](https://github.com/sultan99/restate/commit/e0b8f46eec36be51452c543cb3a17efb84c3f4e4))
-
-
-
-
-
-# [0.1.0-alpha.3](https://github.com/sultan99/restate/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2021-10-07)
-
-
-### Bug Fixes
-
-* **state:** set currying function & typings ([f97b566](https://github.com/sultan99/restate/commit/f97b566ac1af8f2f757edcc16a6ed21974c32b75))
-
-
-
-
-
-# [0.1.0-alpha.2](https://github.com/sultan99/restate/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2021-09-21)
-
-
-### Bug Fixes
-
-* **state:** typing & package updates ([bc4f139](https://github.com/sultan99/restate/commit/bc4f13915dd775de4a61ab07b823462816325f73))
-
-
-
-
-
-# [0.1.0-alpha.1](https://github.com/sultan99/restate/compare/v0.1.0-alpha.0...v0.1.0-alpha.1) (2021-06-13)
-
-
-### Bug Fixes
-
-* types and import ([9719f85](https://github.com/sultan99/restate/commit/9719f8557cbcb7b9b5c956f83c2f9c69fab42618))
-
-
-
-
-
-# 0.1.0-alpha.0 (2021-06-09)
-
-
-### Features
-
-* **state:** add create state function ([17cf2de](https://github.com/sultan99/restate/commit/17cf2def4003a398f1d1a38c060aaead3be59e27))
+- 🧠 Greedy rendering
+- 🧮 Computed values with hook nesting
+- 🎬 Actions
+- 🗿 Static variables
+- 🤹 Selectors
+- 📎 Strongly typed with TypeScript.

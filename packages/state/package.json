@@ -1,6 +1,6 @@
 {
   "name": "@holycow/state",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,8 +20,9 @@
     "compile": "tsc -b",
     "lint": "eslint . --ext .tsx,.ts --fix",
     "prepublishOnly": "npm run build",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
+    "sync": "cp ../../README.md README.md && cp ../../CHANGELOG.md CHANGELOG.md",
+    "test": "jest --coverage --silent",
+    "test:watch": "jest -w",
     "tsc": "tsc -w"
   },
   "peerDependencies": {
