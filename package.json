@@ -1,7 +1,6 @@
 {
   "name": "holycow",
   "version": "1.2.0",
-  "private": true,
   "keywords": [
     "state management",
     "react"
@@ -11,7 +10,15 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sultan99/holycow"
+    "url": "git+https://github.com/sultan99/holycow.git"
+  },
+  "scripts": {
+    "build": "node scripts/bulk-run.mjs 'run build'",
+    "lint": "node scripts/bulk-run.mjs 'run lint'",
+    "publish": "node scripts/bulk-run.mjs 'publish'",
+    "sync-versions": "node scripts/sync-versions.mjs",
+    "test": "node scripts/bulk-run.mjs 'run test'",
+    "tsc": "node scripts/bulk-run.mjs 'run tsc'"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",

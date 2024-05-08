@@ -4,7 +4,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sultan99/holycow",
+    "url": "git+https://github.com/sultan99/holycow.git",
     "directory": "packages/state"
   },
   "author": "sultan99",
@@ -16,14 +16,13 @@
   ],
   "scripts": {
     "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./dist",
+    "clean": "npm run sync && rm -rf ./dist",
     "compile": "tsc -b",
     "lint": "eslint . --ext .tsx,.ts --fix",
-    "prepublishOnly": "npm run build",
     "sync": "cp ../../README.md README.md && cp ../../CHANGELOG.md CHANGELOG.md",
     "test": "jest --coverage --silent",
     "test:watch": "jest -w",
-    "tsc": "tsc -w"
+    "tsc": "tsc"
   },
   "peerDependencies": {
     "react": "^18.2.0"

@@ -1,4 +1,8 @@
 # Holy State
+[![codecov](https://codecov.io/gh/sultan99/holycow/branch/main/graph/badge.svg)](https://codecov.io/gh/sultan99/holycow)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40holycow%2Fstate?label=gzip&color=green)
+![NPM Downloads](https://img.shields.io/npm/d18m/%40holycow%2Fstate)
+![GitHub License](https://img.shields.io/github/license/sultan99/holycow)
 > Hook-based state management library for [React](https://github.com/facebook/react) applications.
 
 <br/>
@@ -16,7 +20,7 @@ Holy moly, you are here! You're more than welcome!
 So, it is all about state management handled by hooks. Think of it as a utility for creating hooks that can store a global state across the entire application. The coolest part is that it works without context providers, observables, selectors, or HOC connectors. No boilerplate code but hooks.
 
 ### 🦄 Main features
-- The library is tree-shakeable with no external dependency. [Gzip size: ~1.6kb](https://bundlephobia.com/package/@holycow/state@1.1.0). 
+- The library is tree-shakeable with no external dependency. [Gzip size: ~1.9kb](https://bundlephobia.com/package/@holycow/state@1.2.0). 
 - The state hooks can be used outside of the React tree.
 - Greedy rendering. Only updated values trigger component rendering.
 - Computed values with caching and hook nesting.

@@ -1,0 +1,20 @@
+name: 🔬 Pre Release
+run-name: Candidate release v${{ inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: e.g. 1.0.0-alpha.0
+        required: true
+        type: string
+
+jobs:
+  run-publish:
+    name: Deployment
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ inputs.version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

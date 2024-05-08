@@ -1,0 +1,50 @@
+name: 🧪 Test coverage & Linting
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+  pull_request:
+    types: [ready_for_review, opened, synchronize]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    if: "contains(github.event_name, 'pull_request') && !github.event.pull_request.draft || !contains(github.event_name, 'pull_request')"
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: NPM installation
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm i
+
+      - name: Code linter check
+        run: npm run lint
+
+      - name: Type testing with typescript
+        run: npm run tsc
+
+      - name: Test coverage
+        run: npm run test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./packages/state/coverage/lcov.info

@@ -1,0 +1,51 @@
+name: 📦 Release
+run-name: Production release v${{ github.ref_name }}
+
+on:
+  create:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+$"
+
+jobs:
+  check-version:
+    name: Check version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if tag is valid
+        run: |
+          if [[ ! ${{ github.ref_name }} =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid tag name: ${{ github.ref_name }}"
+            exit 1
+          fi
+
+  run-publish:
+    name: Deployment
+    uses: ./.github/workflows/publish.yml
+    needs: check-version
+    with:
+      version: ${{ github.ref_name }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  deploy:
+    name: Package Release
+    runs-on: ubuntu-latest
+    needs: run-publish
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: Bump package version and push tag
+        run: |
+          npm version ${{ github.ref_name }} --no-git-tag-version --no-push
+          npm run sync-versions
+          git add \*.json
+          git commit -m "release: ${{ github.ref_name }}"
+          git push --force origin HEAD:refs/tags/${{ github.ref_name }}
