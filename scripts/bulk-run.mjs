@@ -8,7 +8,8 @@
 import {execSync} from 'child_process'
 import {getDirectories, pkgDir} from './utils.mjs'
 
-const command = process.argv[3].replace(`'`, '')
+const command = process.argv.splice(2).join(' ')
+console.log(command)
 const directories = getDirectories(pkgDir)
 
 /**
@@ -32,7 +33,7 @@ const publishPackage = pkgName => {
 const runCommand = pkgName => {
   try {
     console.info(`\n💌 Running "${command}" script for package "${pkgName}".\n`)
-    console.info(execSync(`npm run --prefix ${pkgDir}/${pkgName} ${command}`).toString())
+    console.info(execSync(`npm --prefix ${pkgDir}/${pkgName} ${command}`).toString())
     console.info(`\n📬 Successfully ran "${command}" script for package "${pkgName}".\n`)
   }
   catch (err) {
