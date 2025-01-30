@@ -8,7 +8,7 @@
 import {execSync} from 'child_process'
 import {getDirectories, pkgDir} from './utils.mjs'
 
-const command = process.argv[3].replace(`'`, '')
+const command = process.argv[2].replace(`'`, '')
 const directories = getDirectories(pkgDir)
 
 /**

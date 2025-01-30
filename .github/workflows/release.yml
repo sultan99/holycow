@@ -1,5 +1,5 @@
 name: 📦 Release
-run-name: Production release v${{ github.ref_name }}
+run-name: Production release ${{ github.ref_name }}
 
 on:
   create:
