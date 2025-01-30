@@ -35,7 +35,7 @@ export const createState = <I extends InitState>(initState: I) => {
       isString(a) && update(a, b) ||
       compose(...toFunc(a))
     )
-    const nextState = createProxy(updateState(state))
+    const nextState = createProxy(updateState(state)) as S
     subscribers.forEach(subscriber => subscriber(proxyState, nextState))
     staticProps.forEach((prop: keyof I) => state[prop] = nextState[prop])
   })

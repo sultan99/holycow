@@ -1,8 +1,9 @@
 # Holy State
 [![codecov](https://codecov.io/gh/sultan99/holycow/branch/main/graph/badge.svg)](https://codecov.io/gh/sultan99/holycow)
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40holycow%2Fstate?label=gzip&color=green)
-![NPM Downloads](https://img.shields.io/npm/d18m/%40holycow%2Fstate)
-![GitHub License](https://img.shields.io/github/license/sultan99/holycow)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40holycow%2Fstate?label=gzip%20size&color=green&link=https%3A%2F%2Fbundlephobia.com%2Fpackage%2F%40holycow%2Fstate%401.2.0)
+![NPM Downloads](https://img.shields.io/npm/d18m/%40holycow%2Fstate?link=https%3A%2F%2Fnpmtrends.com%2F%40holycow%2Fstate)
+![GitHub License](https://img.shields.io/github/license/sultan99/holycow?link=https%3A%2F%2Fgithub.com%2Fsultan99%2Fholycow%2Fblob%2Fmain%2FLICENSE)
+
 > Hook-based state management library for [React](https://github.com/facebook/react) applications.
 
 <br/>

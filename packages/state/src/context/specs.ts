@@ -1,8 +1,8 @@
 import type {Action} from '..'
-import {act, Simulate} from 'react-dom/test-utils'
+import {act, createElement} from 'react'
 import {action, createContextState, createState, isObject} from '..'
-import {createElement} from 'react'
 import {createRoot, Root} from 'react-dom/client'
+import {fireEvent} from '@testing-library/react'
 
 type CounterState = {
   count: number
@@ -127,7 +127,7 @@ describe(`🗃️ Context state`, () => {
   it(`should increment first counter value and rerender it`, () => {
     const button = document.getElementById(`firstButton`)!
 
-    act(() => Simulate.click(button))
+    act(() => fireEvent.click(button))
     expect(renders).toEqual({
       app: {count: 0, base: 1, button: 1},
       counter: {
@@ -140,7 +140,7 @@ describe(`🗃️ Context state`, () => {
   it(`should increment second counter value and rerender it`, () => {
     const button = document.getElementById(`secondButton`)!
 
-    act(() => Simulate.click(button))
+    act(() => fireEvent.click(button))
     expect(renders).toEqual({
       app: {count: 0, base: 1, button: 1},
       counter: {
@@ -155,8 +155,8 @@ describe(`🗃️ Context state`, () => {
 
     act(() => {
       // Two clicks are combined into a single batched render.
-      Simulate.click(button)
-      Simulate.click(button)
+      fireEvent.click(button)
+      fireEvent.click(button)
     })
     expect(renders).toEqual({
       app: {count: 0, base: 1, button: 1},
@@ -175,7 +175,7 @@ describe(`🗃️ Context state`, () => {
   it(`should rerender all components except context children`, () => {
     const button = document.getElementById(`appButton`)!
 
-    act(() => Simulate.click(button))
+    act(() => fireEvent.click(button))
     expect(renders).toEqual({
       app: {count: 1, base: 2, button: 2},
       counter: {
